@@ -2,6 +2,8 @@
 
 namespace Orderonlineid\Permission\Traits;
 
+use Illuminate\Support\Collection;
+use Illuminate\Support\Traits\EnumeratesValues;
 use MongoDB\BSON\ObjectId;
 use MongoDB\Laravel\Eloquent\Model;
 use MongoDB\Laravel\Query\Builder;
@@ -17,7 +19,12 @@ use function collect;
 trait HasRoles
 {
 	use HasPermissions;
-	public function assignRole(...$roles)
+
+    /**
+     * @param ...$roles
+     * @return Collection|EnumeratesValues
+     */
+    public function assignRole(...$roles)
 	{
 		$roles = collect($roles)
 			->map(function ($role) {
@@ -30,7 +37,7 @@ trait HasRoles
 			->whereNotIn('name', collect($this->roles)->pluck('name'));
 
 
-		if ($roles->empty()) {
+		if (!$roles->empty()) {
 			$this->roles = collect($this->roles)->merge($roles)->toArray();
 			$this->save();
 		}
@@ -41,7 +48,6 @@ trait HasRoles
 	 * Revoke the given role from the model.
 	 *
 	 * @param array|string|Role ...$roles
-	 *
 	 * @return array|Role|string
 	 */
 	public function removeRole(...$roles)

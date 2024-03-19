@@ -2,10 +2,12 @@
 
 namespace Orderonlineid\Permission\Traits;
 
+use App\Models\User;
 use MongoDB\BSON\ObjectId;
 use MongoDB\Laravel\Eloquent\Model;
 use Orderonlineid\Permission\Guard;
 use Orderonlineid\Permission\Models\Permission;
+use Orderonlineid\Permission\Models\Role;
 use ReflectionException;
 use function collect;
 use function is_array;
@@ -17,7 +19,11 @@ use function is_string;
  */
 trait HasPermissions
 {
-	public function givePermissionTo(...$permissions): self
+    /**
+     * @param ...$permissions
+     * @return User|Role|HasPermissions
+     */
+    public function givePermissionTo(...$permissions): self
 	{
 		$inputPermissions = collect($permissions)->map(function ($permission) {
 			$dataPermission = $this->getStoredPermission($permission);
@@ -25,11 +31,10 @@ trait HasPermissions
 				'id' => new ObjectId($dataPermission->id),
 				'name' => $permission
 			];
-		})->whereNotIn('name', collect($this->permissions)->pluck('name'))
-			->toArray();
+		})->whereNotIn('name', collect($this->permissions)->pluck('name'));
 
-		if (!empty($inputPermissions)) {
-			$this->permissions = collect($this->permissions)->merge($inputPermissions)->toArray();
+		if (!$inputPermissions->isEmpty()) {
+			$this->permissions = collect($this->permissions)->merge($inputPermissions->toArray())->toArray();
 			$this->save();
 		}
 
