@@ -16,44 +16,44 @@ use function collect;
  */
 trait HasRoles
 {
-    use HasPermissions;
-    public function assignRole(...$roles)
-    {
-        $roles = collect($roles)
-            ->map(function ($role) {
-                $dataRole = $this->getStoredRole($role);
-                return [
-                    'id' => new ObjectId($dataRole->id),
-                    'name' => $role
-                ];
-            })
-            ->whereNotIn('name', collect($this->roles)->pluck('name'));
+	use HasPermissions;
+	public function assignRole(...$roles)
+	{
+		$roles = collect($roles)
+			->map(function ($role) {
+				$dataRole = $this->getStoredRole($role);
+				return [
+					'id' => new ObjectId($dataRole->id),
+					'name' => $role
+				];
+			})
+			->whereNotIn('name', collect($this->roles)->pluck('name'));
 
 
-        if ($roles->empty()) {
-            $this->roles = collect($this->roles)->merge($roles)->toArray();
-            $this->save();
-        }
-        return $roles;
-    }
+		if ($roles->empty()) {
+			$this->roles = collect($this->roles)->merge($roles)->toArray();
+			$this->save();
+		}
+		return $roles;
+	}
 
-    /**
-     * Revoke the given role from the model.
-     *
-     * @param array|string|Role ...$roles
-     *
-     * @return array|Role|string
-     */
-    public function removeRole(...$roles)
-    {
-       $roles = collect($this->roles)
-           ->whereNotIn('name', $roles)
-           ->toArray();
-       $this->roles = $roles;
-       $this->save();
+	/**
+	 * Revoke the given role from the model.
+	 *
+	 * @param array|string|Role ...$roles
+	 *
+	 * @return array|Role|string
+	 */
+	public function removeRole(...$roles)
+	{
+	   $roles = collect($this->roles)
+		   ->whereNotIn('name', $roles)
+		   ->toArray();
+	   $this->roles = $roles;
+	   $this->save();
 
-        return $roles;
-    }
+		return $roles;
+	}
 
 	/**
 	 * Return Role object
@@ -65,8 +65,8 @@ trait HasRoles
 	 */
 	protected function getStoredRole(Role|string $role): Builder|Model
 	{
-        $guardName = (new Guard())->getDefaultName();
-        if (\is_string($role)) {
+		$guardName = (new Guard())->getDefaultName();
+		if (\is_string($role)) {
 			return Role::findByName($role, $guardName);
 		}
 
