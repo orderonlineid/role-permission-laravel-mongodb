@@ -8,10 +8,6 @@ use ReflectionException;
 use function get_class;
 use function is_object;
 
-/**
- * Class Guard
- * @package Maklad\Permission
- */
 class Guard
 {
     /**
