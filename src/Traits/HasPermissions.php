@@ -2,12 +2,10 @@
 
 namespace Orderonlineid\Permission\Traits;
 
-use App\Models\User;
 use MongoDB\BSON\ObjectId;
 use MongoDB\Laravel\Eloquent\Model;
 use Orderonlineid\Permission\Guard;
 use Orderonlineid\Permission\Models\Permission;
-use Orderonlineid\Permission\Models\Role;
 use ReflectionException;
 use function collect;
 use function is_array;
@@ -19,22 +17,19 @@ use function is_string;
  */
 trait HasPermissions
 {
-    /**
-     * @param ...$permissions
-     * @return User|Role|HasPermissions
-     */
-    public function givePermissionTo(...$permissions): self
+	public function givePermissionTo(...$permissions): self
 	{
 		$inputPermissions = collect($permissions)->map(function ($permission) {
 			$dataPermission = $this->getStoredPermission($permission);
 			return [
 				'id' => new ObjectId($dataPermission->id),
-				'name' => $permission
+				'code' => $permission
 			];
-		})->whereNotIn('name', collect($this->permissions)->pluck('name'));
+		})->whereNotIn('code', collect($this->permissions)->pluck('code'))
+			->toArray();
 
-		if (!$inputPermissions->isEmpty()) {
-			$this->permissions = collect($this->permissions)->merge($inputPermissions->toArray())->toArray();
+		if (!empty($inputPermissions)) {
+			$this->permissions = collect($this->permissions)->merge($inputPermissions)->toArray();
 			$this->save();
 		}
 
@@ -44,7 +39,7 @@ trait HasPermissions
 	public function revokePermissionTo(...$permissions): self
 	{
 		$this->permissions = collect($this->permissions ?? [])
-			->whereNotIn('name', $permissions)
+			->whereNotIn('code', $permissions)
 			->all();
 		$this->save();
 		return $this;
@@ -59,7 +54,7 @@ trait HasPermissions
 	{
         $guard = (new Guard())->getDefaultName();
 		if (is_string($permission)) {
-			return Permission::findByName($permission, $guard);
+			return Permission::findByCode($permission, $guard);
 		}
 
 		return $permission;

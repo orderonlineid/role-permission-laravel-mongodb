@@ -42,7 +42,7 @@ class Permission extends Model
 	{
 		$attributes['guard_name'] = $attributes['guard_name'] ?? (new Guard())->getDefaultName();
 
-		if (static::query()->where('name', $attributes['name'])->where('guard_name', $attributes['guard_name'])->first()) {
+		if (static::query()->where('code', $attributes['code'])->where('guard_name', $attributes['guard_name'])->first()) {
 			throw new Exception('Permission already exists');
 		}
 
@@ -50,18 +50,18 @@ class Permission extends Model
 	}
 
 	/**
-	 * @param string $name
+	 * @param string $code
 	 * @param string|null $guardName
 	 * @return Model|Builder
 	 * @throws ReflectionException
 	 * @throws Throwable
 	 */
-	public static function findByName(string $name, string $guardName = null): Model|Builder
+	public static function findByCode(string $code, string $guardName = null): Model|Builder
 	{
 		$guardName = $guardName ?? (new Guard())->getDefaultName();
 
 		$permission = static::query()
-			->where('name', $name)
+			->where('code', $code)
 			->where('guard_name', $guardName)
 			->first();
 		throw_if($permission === null, new Exception('Permission not found'));

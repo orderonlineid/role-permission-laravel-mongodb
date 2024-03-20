@@ -2,8 +2,6 @@
 
 namespace Orderonlineid\Permission\Traits;
 
-use Illuminate\Support\Collection;
-use Illuminate\Support\Traits\EnumeratesValues;
 use MongoDB\BSON\ObjectId;
 use MongoDB\Laravel\Eloquent\Model;
 use MongoDB\Laravel\Query\Builder;
@@ -19,25 +17,20 @@ use function collect;
 trait HasRoles
 {
 	use HasPermissions;
-
-    /**
-     * @param ...$roles
-     * @return Collection|EnumeratesValues
-     */
-    public function assignRole(...$roles)
+	public function assignRole(...$roles)
 	{
 		$roles = collect($roles)
 			->map(function ($role) {
 				$dataRole = $this->getStoredRole($role);
 				return [
 					'id' => new ObjectId($dataRole->id),
-					'name' => $role
+					'code' => $role
 				];
 			})
-			->whereNotIn('name', collect($this->roles)->pluck('name'));
+			->whereNotIn('code', collect($this->roles)->pluck('code'));
 
 
-		if (!$roles->empty()) {
+		if ($roles->empty()) {
 			$this->roles = collect($this->roles)->merge($roles)->toArray();
 			$this->save();
 		}
@@ -48,12 +41,13 @@ trait HasRoles
 	 * Revoke the given role from the model.
 	 *
 	 * @param array|string|Role ...$roles
+	 *
 	 * @return array|Role|string
 	 */
 	public function removeRole(...$roles)
 	{
 	   $roles = collect($this->roles)
-		   ->whereNotIn('name', $roles)
+		   ->whereNotIn('code', $roles)
 		   ->toArray();
 	   $this->roles = $roles;
 	   $this->save();
@@ -73,7 +67,7 @@ trait HasRoles
 	{
 		$guardName = (new Guard())->getDefaultName();
 		if (\is_string($role)) {
-			return Role::findByName($role, $guardName);
+			return Role::findByCode($role, $guardName);
 		}
 
 		return $role;
