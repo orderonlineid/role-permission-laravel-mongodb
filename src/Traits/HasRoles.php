@@ -24,10 +24,10 @@ trait HasRoles
 				$dataRole = $this->getStoredRole($role);
 				return [
 					'id' => new ObjectId($dataRole->id),
-					'name' => $role
+					'code' => $role
 				];
 			})
-			->whereNotIn('name', collect($this->roles)->pluck('name'));
+			->whereNotIn('code', collect($this->roles)->pluck('code'));
 
 
 		if ($roles->empty()) {
@@ -47,7 +47,7 @@ trait HasRoles
 	public function removeRole(...$roles)
 	{
 	   $roles = collect($this->roles)
-		   ->whereNotIn('name', $roles)
+		   ->whereNotIn('code', $roles)
 		   ->toArray();
 	   $this->roles = $roles;
 	   $this->save();
@@ -67,7 +67,7 @@ trait HasRoles
 	{
 		$guardName = (new Guard())->getDefaultName();
 		if (\is_string($role)) {
-			return Role::findByName($role, $guardName);
+			return Role::findByCode($role, $guardName);
 		}
 
 		return $role;

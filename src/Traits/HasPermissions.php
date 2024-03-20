@@ -23,9 +23,9 @@ trait HasPermissions
 			$dataPermission = $this->getStoredPermission($permission);
 			return [
 				'id' => new ObjectId($dataPermission->id),
-				'name' => $permission
+				'code' => $permission
 			];
-		})->whereNotIn('name', collect($this->permissions)->pluck('name'))
+		})->whereNotIn('code', collect($this->permissions)->pluck('code'))
 			->toArray();
 
 		if (!empty($inputPermissions)) {
@@ -39,7 +39,7 @@ trait HasPermissions
 	public function revokePermissionTo(...$permissions): self
 	{
 		$this->permissions = collect($this->permissions ?? [])
-			->whereNotIn('name', $permissions)
+			->whereNotIn('code', $permissions)
 			->all();
 		$this->save();
 		return $this;
@@ -54,7 +54,7 @@ trait HasPermissions
 	{
         $guard = (new Guard())->getDefaultName();
 		if (is_string($permission)) {
-			return Permission::findByName($permission, $guard);
+			return Permission::findByCode($permission, $guard);
 		}
 
 		return $permission;

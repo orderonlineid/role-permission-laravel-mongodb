@@ -41,7 +41,7 @@ class Role extends Model
 	public static function create(array $attributes = []): Builder|Model
 	{
 		$attributes['guard_name'] = $attributes['guard_name'] ?? (new Guard())->getDefaultName();
-		if (static::query()->where('name', $attributes['name'])->where('guard_name', $attributes['guard_name'])->first()) {
+		if (static::query()->where('code', $attributes['code'])->where('guard_name', $attributes['guard_name'])->first()) {
 			throw new Exception('Role already exists');
 		}
 
@@ -49,39 +49,39 @@ class Role extends Model
 	}
 
 	/**
-	 * @param string $name
+	 * @param string $code
 	 * @param string|null $guard_name
 	 * @return Builder|Model
 	 * @throws ReflectionException
 	 */
-	public static function findOrCreate(string $name, string $guard_name = null): Builder|Model
+	public static function findOrCreate(string $code, string $guard_name = null): Builder|Model
 	{
 		$guardName = $guardName ?? (new Guard())->getDefaultName();
 		$role = static::query()
-			->where('name', $name)
+			->where('code', $code)
 			->where('gurad_name', $guardName)
 			->first();
 
 		if (!$role) {
-			$role = static::create(['name' => $name, 'guard_name' => $guardName]);
+			$role = static::create(['code' => $code, 'guard_name' => $guardName]);
 		}
 
 		return $role;
 	}
 
 	/**
-	 * @param string $name
+	 * @param string $code
 	 * @param string|null $guardName
 	 * @return Builder|Model
 	 * @throws ReflectionException
 	 * @throws Exception
 	 */
-	public static function findByName(string $name, string $guardName = null): Builder|Model
+	public static function findByCode(string $code, string $guardName = null): Builder|Model
 	{
 		$guardName = (new Guard())->getDefaultName();
 
 		$role = static::query()
-			->where('name', $name)
+			->where('code', $code)
 			->where('guard_name', $guardName)
 			->first();
 
