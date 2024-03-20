@@ -51,6 +51,27 @@ class Role extends Model
 
 	/**
 	 * @param string $code
+	 * @param string|null $guard_name
+	 * @return Builder|Model
+	 * @throws ReflectionException
+	 */
+	public static function findOrCreate(string $code, string $guard_name = null): Builder|Model
+	{
+		$guardName = $guardName ?? (new Guard())->getDefaultName();
+		$role = static::query()
+			->where('code', $code)
+			->where('gurad_name', $guardName)
+			->first();
+
+		if (!$role) {
+			$role = static::create(['code' => $code, 'guard_name' => $guardName]);
+		}
+
+		return $role;
+	}
+
+	/**
+	 * @param string $code
 	 * @param string|null $guardName
 	 * @return Builder|Model
 	 * @throws ReflectionException
@@ -58,7 +79,7 @@ class Role extends Model
 	 */
 	public static function findByCode(string $code, string $guardName = null): Builder|Model
 	{
-		$guardName ?? (new Guard())->getDefaultName();
+		$guardName = (new Guard())->getDefaultName();
 
 		$role = static::query()
 			->where('code', $code)
