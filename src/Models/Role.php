@@ -41,32 +41,12 @@ class Role extends Model
 	public static function create(array $attributes = []): Builder|Model
 	{
 		$attributes['guard_name'] = $attributes['guard_name'] ?? (new Guard())->getDefaultName();
+		$attributes['code'] = strtolower(str_replace(' ', '_', $attributes['name']));
 		if (static::query()->where('code', $attributes['code'])->where('guard_name', $attributes['guard_name'])->first()) {
 			throw new Exception('Role already exists');
 		}
 
 		return static::query()->create($attributes);
-	}
-
-	/**
-	 * @param string $code
-	 * @param string|null $guard_name
-	 * @return Builder|Model
-	 * @throws ReflectionException
-	 */
-	public static function findOrCreate(string $code, string $guard_name = null): Builder|Model
-	{
-		$guardName = $guardName ?? (new Guard())->getDefaultName();
-		$role = static::query()
-			->where('code', $code)
-			->where('gurad_name', $guardName)
-			->first();
-
-		if (!$role) {
-			$role = static::create(['code' => $code, 'guard_name' => $guardName]);
-		}
-
-		return $role;
 	}
 
 	/**
@@ -78,7 +58,7 @@ class Role extends Model
 	 */
 	public static function findByCode(string $code, string $guardName = null): Builder|Model
 	{
-		$guardName = (new Guard())->getDefaultName();
+		$guardName ?? (new Guard())->getDefaultName();
 
 		$role = static::query()
 			->where('code', $code)
