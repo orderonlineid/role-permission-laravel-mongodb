@@ -61,7 +61,7 @@ trait HasPermissions
 			];
 		})->toArray();
 
-		$this->permissions = collect($this->permissions)->merge($inputPermissions)->toArray();
+		$this->permissions = $inputPermissions;
 		$this->save();
 
 		return $this;
