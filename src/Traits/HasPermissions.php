@@ -53,7 +53,7 @@ trait HasPermissions
 	 */
 	public function syncPermissions(...$permissions): self
 	{
-		$inputPermissions = collect($permissions)->map(function ($permission) {
+		$inputPermissions = collect($permissions)->flatten()->map(function ($permission) {
 			$dataPermission = $this->getStoredPermission($permission);
 			return [
 				'id' => new ObjectId($dataPermission->id),
