@@ -6,6 +6,7 @@ use MongoDB\BSON\ObjectId;
 use MongoDB\Laravel\Eloquent\Model;
 use Orderonlineid\Permission\Guard;
 use Orderonlineid\Permission\Models\Permission;
+use Orderonlineid\Permission\Models\Role;
 use ReflectionException;
 use function collect;
 use function is_array;
@@ -17,6 +18,13 @@ use function is_string;
  */
 trait HasPermissions
 {
+	/**
+	 * Grant the given permission(s) to a role.
+	 *
+	 * @param ...$permissions
+	 * @return Role|HasPermissions
+	 * @throws ReflectionException
+	 */
 	public function givePermissionTo(...$permissions): self
 	{
 		$inputPermissions = collect($permissions)->map(function ($permission) {
@@ -36,6 +44,35 @@ trait HasPermissions
 		return $this;
 	}
 
+	/**
+	 * Remove all current permissions and set the given ones.
+	 *
+	 * @param ...$permissions
+	 * @return Role|HasPermissions
+	 * @throws ReflectionException
+	 */
+	public function syncPermissions(...$permissions): self
+	{
+		$inputPermissions = collect($permissions)->map(function ($permission) {
+			$dataPermission = $this->getStoredPermission($permission);
+			return [
+				'id' => new ObjectId($dataPermission->id),
+				'code' => $permission
+			];
+		})->toArray();
+
+		$this->permissions = collect($this->permissions)->merge($inputPermissions)->toArray();
+		$this->save();
+
+		return $this;
+	}
+
+	/**
+	 * Revoke the given permission.
+	 *
+	 * @param ...$permissions
+	 * @return Role|HasPermissions
+	 */
 	public function revokePermissionTo(...$permissions): self
 	{
 		$this->permissions = collect($this->permissions ?? [])
@@ -52,7 +89,7 @@ trait HasPermissions
 	 */
 	protected function getStoredPermission($permission): mixed
 	{
-        $guard = (new Guard())->getDefaultName();
+		$guard = (new Guard())->getDefaultName();
 		if (is_string($permission)) {
 			return Permission::findByCode($permission, $guard);
 		}
