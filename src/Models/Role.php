@@ -41,7 +41,6 @@ class Role extends Model
 	public static function create(array $attributes = []): Builder|Model
 	{
 		$attributes['guard_name'] = $attributes['guard_name'] ?? (new Guard())->getDefaultName();
-		$attributes['code'] = strtolower(str_replace(' ', '_', $attributes['name']));
 		if (static::query()->where('code', $attributes['code'])->where('guard_name', $attributes['guard_name'])->first()) {
 			throw new Exception('Role already exists');
 		}
