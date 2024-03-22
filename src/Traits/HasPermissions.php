@@ -59,9 +59,13 @@ trait HasPermissions
 				'id' => new ObjectId($dataPermission->id),
 				'code' => $permission
 			];
-		})->toArray();
-
-		$this->permissions = $inputPermissions;
+		});
+		if (!$this instanceof Role && !empty($this->role)) {
+			$inputPermissions = $inputPermissions
+				->merge($this->permissions)
+				->unique();
+		}
+		$this->permissions = $inputPermissions->toArray();
 		$this->save();
 
 		return $this;
