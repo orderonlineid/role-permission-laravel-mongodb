@@ -8,6 +8,7 @@ use Orderonlineid\Permission\Guard;
 use Orderonlineid\Permission\Models\Permission;
 use Orderonlineid\Permission\Models\Role;
 use ReflectionException;
+use Throwable;
 use function collect;
 use function is_array;
 use function is_string;
@@ -99,5 +100,40 @@ trait HasPermissions
 		}
 
 		return $permission;
+	}
+
+	public function getEligiblePermission(...$permissions): int
+	{
+		if (is_array($permissions[0])) {
+			$permissions = $permissions[0];
+		}
+
+		return collect($this->permissions)->whereIn('code', $permissions)->count();
+	}
+
+	/**
+	 * Determine if the model has any of the given permissions.
+	 *
+	 * @param array ...$permissions
+	 *
+	 * @return bool
+	 */
+	public function hasAllPermissions(...$permissions): bool
+	{
+		$eligiblePermission = $this->getEligiblePermission($permissions);
+		return count($permissions) === $eligiblePermission && $eligiblePermission > 0;
+	}
+
+	/**
+	 * Determine if the model has any of the given permissions.
+	 *
+	 * @param array|string ...$permissions
+	 *
+	 * @return bool
+	 */
+	public function hasAnyPermissions(...$permissions): bool
+	{
+		$eligiblePermission = $this->getEligiblePermission($permissions);
+		return $eligiblePermission > 0;
 	}
 }
