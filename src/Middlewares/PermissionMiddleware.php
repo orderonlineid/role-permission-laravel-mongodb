@@ -19,12 +19,11 @@ class PermissionMiddleware
 	 * @return mixed
 	 * @throws Exception
 	 */
-	public function handle($request, Closure $next, $permission): mixed
+	public function handle($request, Closure $next, ...$permissions): mixed
 	{
 		if (app('auth')->guest()) {
 			throw new Exception('User not logged in', 403);
 		}
-		$permissions = is_array($permission) ? $permission : explode('|', $permission);
 
 		if (!app('auth')->user()->hasAnyPermissions(...$permissions)) {
 			throw new Exception('Unauthorized with permissions ' . implode(', ', $permissions), 403);

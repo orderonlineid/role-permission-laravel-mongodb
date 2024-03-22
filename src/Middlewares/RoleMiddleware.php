@@ -19,13 +19,11 @@ class RoleMiddleware
 	 * @return mixed
 	 * @throws Exception
 	 */
-	public function handle($request, Closure $next, $role): mixed
+	public function handle($request, Closure $next,...$roles): mixed
 	{
 		if (app('auth')->guest()) {
 			throw new Exception('User not logged in', 403);
 		}
-
-		$roles = is_array($role) ? $role : explode('|', $role);
 
 		if (!app('auth')->user()->hasRoles(...$roles)) {
 			throw new Exception('Unauthorized with role ' . implode(', ', $roles), 403);
