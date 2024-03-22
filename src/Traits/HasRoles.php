@@ -66,10 +66,26 @@ trait HasRoles
 	protected function getStoredRole(Role|string $role): Builder|Model
 	{
 		$guardName = (new Guard())->getDefaultName();
-		if (\is_string($role)) {
+		if (is_string($role)) {
 			return Role::findByCode($role, $guardName);
 		}
 
 		return $role;
+	}
+
+	/**
+	 * Determine if the model has one of the given role.
+	 *
+	 * @param string|array|Role $roles
+	 *
+	 * @return bool
+	 */
+	public function hasRoles(...$roles): bool
+	{
+		$roles = collect($roles)->map(function ($role) {
+			return $role instanceof Role ? $role->code : $role;
+		});
+
+		return isset($this->role['code']) && $roles->contains($this->role['code']);
 	}
 }
