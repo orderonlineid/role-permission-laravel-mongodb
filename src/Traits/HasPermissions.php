@@ -32,8 +32,8 @@ trait HasPermissions
 			$exceptPermissions = $this->getModelRole()->first()->permissions;
 			$exceptPermissions = collect($exceptPermissions)->merge($this->permissions);
 		} else {
-            $exceptPermissions = collect($this->permissions);
-        }
+			$exceptPermissions = collect($this->permissions);
+		}
 		$inputPermissions = collect($permissions)->map(function ($permission) {
 			$dataPermission = $this->getStoredPermission($permission);
 			return [
@@ -59,12 +59,12 @@ trait HasPermissions
 	 */
 	public function syncPermissions(...$permissions): self
 	{
-        if ($this->getModelRole()->exists()) {
-            $exceptPermissions = $this->getModelRole()->first()->permissions;
-            $exceptPermissions = collect($exceptPermissions)->merge($this->permissions);
-        } else {
-            $exceptPermissions = collect($this->permissions);
-        }
+		if ($this->getModelRole()->exists()) {
+			$exceptPermissions = $this->getModelRole()->first()->permissions;
+			$exceptPermissions = collect($exceptPermissions)->merge($this->permissions);
+		} else {
+			$exceptPermissions = collect($this->permissions);
+		}
 
 		$inputPermissions = collect($permissions)->map(function ($permission) {
 			$dataPermission = $this->getStoredPermission($permission);
