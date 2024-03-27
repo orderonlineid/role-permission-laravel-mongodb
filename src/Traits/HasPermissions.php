@@ -28,17 +28,22 @@ trait HasPermissions
 	 */
 	public function givePermissionTo(...$permissions): self
 	{
+		if ($this->getModelRole()->exists()) {
+			$exceptPermissions = $this->getModelRole()->first()->permissions;
+			$exceptPermissions = collect($exceptPermissions)->merge($this->permissions);
+		} else {
+            $exceptPermissions = collect($this->permissions);
+        }
 		$inputPermissions = collect($permissions)->map(function ($permission) {
 			$dataPermission = $this->getStoredPermission($permission);
 			return [
 				'id' => new ObjectId($dataPermission->id),
 				'code' => $permission
 			];
-		})->whereNotIn('code', collect($this->permissions)->pluck('code'))
-			->toArray();
+		})->whereNotIn('code', $exceptPermissions->pluck('code'))->pluck('code');
 
 		if (!empty($inputPermissions)) {
-			$this->permissions = collect($this->permissions)->merge($inputPermissions)->toArray();
+			$this->permissions = $inputPermissions->toArray();
 			$this->save();
 		}
 
@@ -54,6 +59,13 @@ trait HasPermissions
 	 */
 	public function syncPermissions(...$permissions): self
 	{
+        if ($this->getModelRole()->exists()) {
+            $exceptPermissions = $this->getModelRole()->first()->permissions;
+            $exceptPermissions = collect($exceptPermissions)->merge($this->permissions);
+        } else {
+            $exceptPermissions = collect($this->permissions);
+        }
+
 		$inputPermissions = collect($permissions)->map(function ($permission) {
 			$dataPermission = $this->getStoredPermission($permission);
 			return [
@@ -63,7 +75,7 @@ trait HasPermissions
 		});
 		if (!$this instanceof Role && !empty($this->role)) {
 			$inputPermissions = $inputPermissions
-				->merge($this->permissions)
+				->merge($exceptPermissions)
 				->unique();
 		}
 		$this->permissions = $inputPermissions->toArray();
@@ -135,5 +147,10 @@ trait HasPermissions
 	{
 		$eligiblePermission = $this->getEligiblePermission($permissions);
 		return $eligiblePermission > 0;
+	}
+
+	public function getModelRole()
+	{
+		return $this->hasOne(Role::class, 'code', 'role.code');
 	}
 }
