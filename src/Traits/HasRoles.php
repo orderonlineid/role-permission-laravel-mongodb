@@ -2,6 +2,7 @@
 
 namespace Orderonlineid\Permission\Traits;
 
+use Dompdf\Exception;
 use MongoDB\BSON\ObjectId;
 use MongoDB\Laravel\Eloquent\Model;
 use MongoDB\Laravel\Query\Builder;
@@ -27,6 +28,8 @@ trait HasRoles
 				'name' => $role->name
 			];
 			$this->save();
+		} else {
+			throw new Exception('Role not defined', 422);
 		}
 		return $role;
 	}
@@ -34,17 +37,19 @@ trait HasRoles
 	/**
 	 * Revoke the given role from the model.
 	 *
-	 * @param array|string|Role ...$roles
+	 * @param Role|Model|Builder $role
 	 *
 	 * @return array|Role|string
 	 */
-	public function removeRole(...$roles)
+	public function removeRole(Role|Model|Builder $role)
 	{
-	   $roles = collect($this->roles)->whereNotIn('code', $roles)->toArray();
-	   $this->roles = $roles;
-	   $this->save();
-
-		return $roles;
+		if ($role->exists()) {
+			$this->role = [];
+			$this->save();
+		} else {
+			throw new Exception('Role not defined', 422);
+		}
+		return $role;
 	}
 
 	/**
