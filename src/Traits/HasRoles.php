@@ -40,9 +40,7 @@ trait HasRoles
 	 */
 	public function removeRole(...$roles)
 	{
-	   $roles = collect($this->roles)
-		   ->whereNotIn('code', $roles)
-		   ->toArray();
+	   $roles = collect($this->roles)->whereNotIn('code', $roles)->toArray();
 	   $this->roles = $roles;
 	   $this->save();
 
@@ -87,11 +85,7 @@ trait HasRoles
 	{
 		if ($this->getModelRole()->exists() && isset($this->permissions)) {
 			$existingPermissions = collect($this->getModelRole()->first()->permissions)->pluck('code');
-			$permissions = collect($this->permissions)->pluck('code');
-
-			$permissions = $permissions
-				->merge($existingPermissions)
-				->toArray();
+			$permissions = collect($this->permissions)->pluck('code')->merge($existingPermissions)->toArray();
 		} else {
 			$permissions = $this->permissions;
 		}
