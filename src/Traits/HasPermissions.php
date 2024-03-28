@@ -40,7 +40,7 @@ trait HasPermissions
 				'id' => new ObjectId($dataPermission->id),
 				'code' => $permission
 			];
-		})->whereNotIn('code', $exceptPermissions->pluck('code'))->pluck('code');
+		})->whereNotIn('code', $exceptPermissions->pluck('code'));
 
 		if (!empty($inputPermissions)) {
 			$this->permissions = $inputPermissions->toArray();
