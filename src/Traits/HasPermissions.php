@@ -29,8 +29,8 @@ trait HasPermissions
 	public function givePermissionTo(...$permissions): self
 	{
 		if ($this->getModelRole()->exists()) {
-			$exceptPermissions = $this->getModelRole()->first()->permissions;
-			$exceptPermissions = collect($exceptPermissions)->merge($this->permissions);
+			$exceptPermissions = collect($this->getModelRole()->first()->permissions)
+				->merge($this->permissions);
 		} else {
 			$exceptPermissions = collect($this->permissions);
 		}
@@ -60,8 +60,8 @@ trait HasPermissions
 	public function syncPermissions(...$permissions): self
 	{
 		if ($this->getModelRole()->exists()) {
-			$exceptPermissions = $this->getModelRole()->first()->permissions;
-			$exceptPermissions = collect($exceptPermissions)->merge($this->permissions);
+			$exceptPermissions = collect($this->getModelRole()->first()->permissions)
+				->merge($this->permissions);
 		} else {
 			$exceptPermissions = collect($this->permissions);
 		}
