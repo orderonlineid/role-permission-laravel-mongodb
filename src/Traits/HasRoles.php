@@ -2,7 +2,7 @@
 
 namespace Orderonlineid\Permission\Traits;
 
-use Dompdf\Exception;
+use Exception;
 use MongoDB\BSON\ObjectId;
 use MongoDB\Laravel\Eloquent\Model;
 use MongoDB\Laravel\Query\Builder;
