@@ -17,24 +17,18 @@ use function collect;
 trait HasRoles
 {
 	use HasPermissions;
-	public function assignRole(...$roles)
+
+	public function assignRole(Role|Model|Builder $role)
 	{
-		$roles = collect($roles)
-			->map(function ($role) {
-				$dataRole = $this->getStoredRole($role);
-				return [
-					'id' => new ObjectId($dataRole->id),
-					'code' => $role
-				];
-			})
-			->whereNotIn('code', collect($this->roles)->pluck('code'));
-
-
-		if ($roles->empty()) {
-			$this->roles = collect($this->roles)->merge($roles)->toArray();
+		if ($role->exists()) {
+			$this->role_id = new ObjectId($role->id);
+			$this->role = [
+				'code' => $role->code,
+				'name' => $role->name
+			];
 			$this->save();
 		}
-		return $roles;
+		return $role;
 	}
 
 	/**
@@ -46,9 +40,7 @@ trait HasRoles
 	 */
 	public function removeRole(...$roles)
 	{
-	   $roles = collect($this->roles)
-		   ->whereNotIn('code', $roles)
-		   ->toArray();
+	   $roles = collect($this->roles)->whereNotIn('code', $roles)->toArray();
 	   $this->roles = $roles;
 	   $this->save();
 
@@ -87,5 +79,16 @@ trait HasRoles
 		});
 
 		return isset($this->role['code']) && $roles->contains($this->role['code']);
+	}
+
+	public function getAllPermissions()
+	{
+		if ($this->getModelRole()->exists() && isset($this->permissions)) {
+			$existingPermissions = collect($this->getModelRole()->first()->permissions)->pluck('code');
+			$permissions = collect($this->permissions)->pluck('code')->merge($existingPermissions)->toArray();
+		} else {
+			$permissions = $this->permissions;
+		}
+		return $permissions;
 	}
 }
