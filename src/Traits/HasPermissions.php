@@ -116,8 +116,13 @@ trait HasPermissions
 		if (is_array($permissions[0])) {
 			$permissions = $permissions[0];
 		}
-
-		return collect($this->permissions)->whereIn('code', $permissions)->count();
+		$currentPermissions = collect($this->permissions);
+		if ($this->getModelRole()->exists() !== null) {
+			$currentPermissions = $currentPermissions
+				->merge($this->getModelRole()->first()->permissions)
+				->unique();
+		}
+		return $currentPermissions->whereIn('code', $permissions)->count();
 	}
 
 	/**

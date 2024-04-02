@@ -3,7 +3,7 @@
 namespace Orderonlineid\Permission\Middlewares;
 
 use Closure;
-use Exception;
+use Illuminate\Auth\Access\AuthorizationException;
 
 /**
  * Class PermissionMiddleware
@@ -22,11 +22,11 @@ class PermissionMiddleware
 	public function handle($request, Closure $next, ...$permissions): mixed
 	{
 		if (app('auth')->guest()) {
-			throw new Exception('User not logged in', 403);
+			throw new AuthorizationException('User not logged in', 403);
 		}
 
 		if (!app('auth')->user()->hasAnyPermissions(...$permissions)) {
-			throw new Exception('Unauthorized with permissions ' . implode(', ', $permissions), 403);
+			throw new AuthorizationException('Unauthorized with permissions ' . implode(', ', $permissions), 403);
 		}
 
 		return $next($request);
