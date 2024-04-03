@@ -117,7 +117,7 @@ trait HasPermissions
 			$permissions = $permissions[0];
 		}
 		$currentPermissions = collect($this->permissions);
-		if ($this->getModelRole()->exists() !== null) {
+		if ($this->getModelRole()->exists()) {
 			$currentPermissions = $currentPermissions
 				->merge($this->getModelRole()->first()->permissions)
 				->unique();
