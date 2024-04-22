@@ -90,7 +90,11 @@ trait HasRoles
 	{
 		if ($this->getModelRole()->exists() && isset($this->permissions)) {
 			$existingPermissions = collect($this->getModelRole()->first()->permissions)->pluck('code');
-			$permissions = collect($this->permissions)->pluck('code')->merge($existingPermissions)->toArray();
+			$permissions = collect($this->permissions)
+				->pluck('code')
+				->merge($existingPermissions)
+				->unique()
+				->toArray();
 		} else {
 			$permissions = $this->permissions;
 		}
