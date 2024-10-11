@@ -5,7 +5,7 @@ namespace Orderonlineid\Permission\Models;
 use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Collection;
-use MongoDB\Laravel\Eloquent\Model;
+use Jenssegers\Mongodb\Eloquent\Model;
 use Orderonlineid\Permission\Guard;
 use ReflectionException;
 use Throwable;

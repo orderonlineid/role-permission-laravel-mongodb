@@ -4,7 +4,7 @@ namespace Orderonlineid\Permission\Models;
 
 use Exception;
 use Illuminate\Database\Eloquent\Builder;
-use MongoDB\Laravel\Eloquent\Model;
+use Jenssegers\Mongodb\Eloquent\Model;
 use Orderonlineid\Permission\Guard;
 use Orderonlineid\Permission\Traits\HasPermissions;
 use Orderonlineid\Permission\Traits\HasRoles;
