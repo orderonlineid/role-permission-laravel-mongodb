@@ -31,8 +31,7 @@
         "illuminate/auth": ">=8.5|^9.0|^10.0|^11.0",
         "illuminate/container": ">=8.5|^9.0|^10.0|^11.0",
         "illuminate/contracts": ">=8.5|^9.0|^10.0|^11.0",
-        "mongodb/laravel-mongodb": ">=8.5|^4.1.1|^3.8",
-        "mongodb/mongodb": "^1.20"
+        "jenssegers/mongodb": "^3.8"
     },
     "require-dev": {}
 }
