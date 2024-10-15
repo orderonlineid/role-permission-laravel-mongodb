@@ -31,8 +31,7 @@
         "illuminate/auth": ">=8.5|^9.0|^10.0|^11.0",
         "illuminate/container": ">=8.5|^9.0|^10.0|^11.0",
         "illuminate/contracts": ">=8.5|^9.0|^10.0|^11.0",
-        "mongodb/mongodb": "^1.17",
-        "jenssegers/mongodb": "^3.8.6"
+        "jenssegers/mongodb": "^3.8"
     },
     "require-dev": {}
 }
