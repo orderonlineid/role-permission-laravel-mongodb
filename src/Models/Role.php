@@ -8,6 +8,7 @@ use Jenssegers\Mongodb\Eloquent\Model;
 use Orderonlineid\Permission\Guard;
 use Orderonlineid\Permission\Traits\HasPermissions;
 use Orderonlineid\Permission\Traits\HasRoles;
+use Orderonlineid\Permission\Traits\SoftDeleteTrait;
 use ReflectionException;
 
 /**
@@ -17,7 +18,7 @@ use ReflectionException;
  */
 class Role extends Model
 {
-	use HasRoles, HasPermissions;
+	use HasRoles, HasPermissions, SoftDeleteTrait;
 	public $guarded = ['id'];
 
 	/**

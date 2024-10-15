@@ -9,4 +9,8 @@ return [
         'roles' => 'roles',
         'permissions' => 'permissions',
     ],
+    // uncomment here if you need soft delete
+    // 'softdelete' => [
+	// 	'is_deleted' => true,
+	// ],
 ];
